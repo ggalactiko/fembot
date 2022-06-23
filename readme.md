@@ -51,4 +51,8 @@ Las pull requests son bienvenidas. Para cambios importantes, abra un [Issue](htt
 Asegúrese de actualizar las pruebas según corresponda.
 
 ## APIS
+Fembot se sostiene gracias a apis de otros proyectos
 
+### [Some Random Api](https://some-random-api.ml)
+### [Waifu pics](https://waifu.pics)
+### [https://galactiko.net/api](https://galactiko.net/api)
