@@ -1,7 +1,7 @@
 # Fembot 
 
 A bad discord bot made with discord.py 2.0
-### [Discord Support Server](https://galactiko.net/support)
+### Join the [Discord Support Server](https://galactiko.net/support)
 
 ## Usage
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ggalactiko/fembot)
