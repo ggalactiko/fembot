@@ -3,6 +3,10 @@
 Un mal bot de discord hecho con discord.py 2.0
 ### Unete al [Servidor de soporte](https://galactiko.net/support)
 
+## Use uno ya existente
+
+[![](https://affectionate-hawking-8dcfae.netlify.app/Captura-de-Pantalla-2022-05-05-a-la_s_-8.24.02-p.m..svg)](https://galactiko.net/invite)
+
 ## Uso
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ggalactiko/fembot)
 
