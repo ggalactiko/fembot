@@ -18,24 +18,29 @@ Asegúrese de activar las intentciones de contenido de mensajes y miembros en el
 [![img](https://cdn.discordapp.com/attachments/969632808920305704/987877147253284934/unknown.png)](#)
 
 
+Su .env devería verse así:
+```
+TOKEN=""
+default_prefix=""
+```
+
 ### Windows
-instala los requisitos usando:
+Instale los requisitos usando:
 ```bash
 pip install -r requirements.txt
 ```
-
-oloque el token de su bot en su archivo `.env`, luego ejecute el bot con:
+Ejecute el bot con:
 ```bash
 python run.py
 ```
 
 ### Linux/macOS
-instala los requisitos usando:
+Instale los requisitos usando:
 ```bash
 pip3 install -r requirements.txt
 ```
 
-Coloque el token de su bot en su archivo `.env`, luego ejecute el bot con:
+Ejecute el bot con:
 ```bash
 python3 run.py
 ```
@@ -44,3 +49,6 @@ python3 run.py
 Las pull requests son bienvenidas. Para cambios importantes, abra un [Issue](https://github.com/ggalactiko/fembot/issues) primero para discutir lo que le gustaría cambiar.
 
 Asegúrese de actualizar las pruebas según corresponda.
+
+## APIS
+
