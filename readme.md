@@ -6,7 +6,7 @@ Un mal bot de discord hecho con discord.py 2.0
 ## Use uno ya existente
 
 <a href="https://galactiko.net/invite">
-  <img src="https://affectionate-hawking-8dcfae.netlify.app/Captura-de-Pantalla-2022-05-05-a-la_s_-8.24.02-p.m..svg" alt="add button" width="50"/>
+  <img src="https://affectionate-hawking-8dcfae.netlify.app/Captura-de-Pantalla-2022-05-05-a-la_s_-8.24.02-p.m..svg" alt="add button" width="150"/>
  </a>
 
 ## Uso
