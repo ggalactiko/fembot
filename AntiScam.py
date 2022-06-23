@@ -11,7 +11,7 @@ async def AntiScam(message: discord.Message, bot, whitelist, muted_role):
     message_content = message_content.replace("'", "`")
     mentions = message.raw_mentions
     # AntiScam-System
-    if isinstance(message.channel, discord.DMChannel):
+    if not message.guild:
         return
 
     if message.author.bot and message.author.public_flags == 65536:
