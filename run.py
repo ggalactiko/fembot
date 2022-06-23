@@ -33,14 +33,14 @@ def when_mentioned_or_function(func):
     return inner
 
 def get_prefix(client, message):
-    if isinstance(message.channel, discord.DMChannel):
+    if not message.guild:
         return default_prefix
     else:
         try:
             with open("prefixes.json", "r") as f:
                 prefixes = json.load(f)
             return prefixes.get(str(message.guild.id))
-        except:
+        except KeyError:
             return default_prefix
 
 #configs
