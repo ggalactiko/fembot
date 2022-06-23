@@ -1,3 +1,4 @@
+#Extracted from https://github.com/matthewflegg/bb-bot/tree/master/cogs/music
 import asyncio
 import itertools
 import discord
