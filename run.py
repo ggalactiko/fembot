@@ -10,6 +10,7 @@ import asyncio
 import os
 from AntiScam import AntiScam
 from discord.app_commands import Choice
+from colorama import Fore
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -20,9 +21,10 @@ async def load_extensions():
         if filename.endswith(".py"):
             try:
                 await uwu.load_extension(f"cogs.{filename[:-3]}")
-                print(f"Loaded {filename[:-3]}")
-            except:
-                print(f"Failed to load extension {filename[:-3]}")
+                print(f"{Fore.LIGHTBLUE_EX}Loaded {filename}")
+            except Exception as e:
+                print(f"{Fore.LIGHTRED_EX}Failed to load {filename}")
+                print(f"{Fore.LIGHTRED_EX}{e}")
 
 def when_mentioned_or_function(func):
     def inner(bot, message):
@@ -94,7 +96,7 @@ async def presence():
 @uwu.event
 async def on_ready():
     await tree.sync()
-    print(f"{uwu.user.name} is ready to go!, watching {len(uwu.guilds)} servers, tree synced")
+    print(f"{Fore.LIGHTBLUE_EX}{uwu.user.name} is ready to go!, watching {len(uwu.guilds)} servers, tree synced")
     await presence()
 
 @uwu.event

@@ -20,3 +20,4 @@ youtube-dl==2021.12.17
 yt-dlp==2022.3.8.2
 python-dotenv==0.19.2
 humanize==4.2.0
+colorama==0.4.4
