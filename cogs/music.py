@@ -150,7 +150,7 @@ class Song:
                  .add_field(name="👍 Total Likes", value ="`{}`".format(humanize.intword(self.source.likes)))
                  .add_field(name="👎 Total Dislikes", value ="`{}`".format(humanize.intword(self.source.dislikes)))
                  .set_thumbnail(url=self.source.thumbnail)
-                 .set_footer(text=f"Solicitado por {self.requester.name} (In streaming)", icon_url=f"{self.requester.avatar_url}"))
+                 .set_footer(text=f"Solicitado por {self.requester.name} (In streaming)", icon_url=f"{self.requester.avatar.url}"))
 
         return em
 
@@ -284,7 +284,7 @@ class music(commands.GroupCog):
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send('An error occurred: {}'.format(str(error)))
 
-    @commands.hybrid_command(help="Hazme unir a un canal de voz.", name="join", aliases = ["j"], invoke_without_subcommand=True)
+    @commands.hybrid_command(help="Hazme unir a un canal de voz.", name="join")
     async def _join(self, ctx: commands.Context):
 
         destination = ctx.author.voice.channel
@@ -327,25 +327,6 @@ class music(commands.GroupCog):
         em = discord.Embed(title=f":zzz: Desconectada de {dest}", color = ctx.author.color)
         em.set_footer(text=f"Solicitado por {ctx.author.name}")            
         await ctx.send(embed=em)
-
-
-# Search whatever u want on youtube!
-    @commands.hybrid_command(help="Busca algo en Youtube", name="search", aliases= ["syt"])
-    async def syt(self, ctx, *, search):
-        async with ctx.typing():
-            query_string = urllib.parse.urlencode({
-                    "search_query": search
-            })
-            html_content = urllib.request.urlopen(
-                "http://youtube.com/results?" + query_string
-            )
-        
-            search_content = re.findall(r"watch\?v=(\S{11})", html_content.read().decode())
-            yt_search = "http://youtube.com/watch?v=" + search_content[0]
-        
-        await ctx.send("🔎 **Esto fue lo que encontré en Youtube. ¿Es lo que buscabas?** <a:neko_pls:846610049203568680>\n" + yt_search)
-
-
 
     @commands.hybrid_command(help="Ajusta el volumen de mi reproducción.", name="volume", aliases = ["vol"])
     async def _volume(self, ctx: commands.Context, *, volume:int):
@@ -405,7 +386,7 @@ class music(commands.GroupCog):
             return await ctx.send("No estás en mi canal de voz.")
 
         em = discord.Embed(title=f"🛑 Vale, ya no reproduciré nada más.", color = ctx.author.color)
-        em.set_footer(text=f"Solicitado por {ctx.author.name}", icon_url=f"{ctx.author.avatar_url}")
+        em.set_footer(text=f"Solicitado por {ctx.author.name}", icon_url=f"{ctx.author.avatar.url}")
         await ctx.send(embed=em)
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         voice.stop()
@@ -506,11 +487,14 @@ class music(commands.GroupCog):
 
     @commands.hybrid_command(name='play', help="Reproduce una canción.", aliases=["p"])
     async def _play(self, ctx: commands.Context, *, search: str):
-
-        if not ctx.voice_state.voice:
-            await ctx.invoke(self._join)
-
         async with ctx.typing():
+            if not self.bot.voice_clients:
+                    destination = ctx.author.voice.channel
+                    if ctx.voice_state.voice:
+                        await ctx.voice_state.voice.move_to(destination)          
+
+                    ctx.voice_state.voice = await destination.connect()
+
             try:
                 source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop)
             except YTDLError as e:
