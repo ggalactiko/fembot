@@ -296,7 +296,7 @@ class music(commands.GroupCog):
 
         em = discord.Embed(title=f"✅ Me he conectado en {destination}", color = ctx.author.color)
         em.set_footer(text=f"Solicitado por {ctx.author.name}")  
-        await ctx.send(embed=em)
+        await ctx.send(embed=em, delete_after=5)
 
     @commands.hybrid_command(help="Invócame en un canal de voz", name="summon", aliases = ["s"])
     async def _summon(self, ctx: commands.Context, *, channel: discord.VoiceChannel = None):
@@ -309,7 +309,7 @@ class music(commands.GroupCog):
             await ctx.voice_state.voice.move_to(destination)
             em = discord.Embed(title=f"✅ He sido invocada en {destination}", color = ctx.author.color)
             em.set_footer(text=f"Solicitado por {ctx.author.name}")
-            await ctx.send(embed=em)
+            await ctx.send(embed=em, delete_after=5)
 
         ctx.voice_state.voice = await destination.connect()
 
@@ -327,7 +327,7 @@ class music(commands.GroupCog):
         del self.voice_states[ctx.guild.id]
         em = discord.Embed(title=f":zzz: Desconectado de {dest}", color = ctx.author.color)
         em.set_footer(text=f"Solicitado por {ctx.author.name}")            
-        await ctx.send(embed=em)
+        await ctx.send(embed=em, delete_after=5)
 
     @commands.hybrid_command(help="Ajusta el volumen de mi reproducción.", name="volume", aliases = ["vol"])
     async def _volume(self, ctx: commands.Context, *, volume:int):
@@ -347,7 +347,7 @@ class music(commands.GroupCog):
         ctx.voice_client.source.volume = volume / 150
         em = discord.Embed(title=f"Volumen ajustado a **`{volume}%`**", color = ctx.author.color)
         em.set_footer(text=f"Solicitado por {ctx.author.name}")    
-        await ctx.send(embed=em)
+        await ctx.send(embed=em, delete_after=5)
 
     @commands.hybrid_command(help="Mira que se está reproduciendo actualmente.", name="now", aliases=['n', 'current', 'playing'])
     async def _now(self, ctx: commands.Context):
@@ -355,7 +355,7 @@ class music(commands.GroupCog):
         await ctx.send(embed=ctx.voice_state.current.create_embed())
 
     @commands.hybrid_command(name='pause', help='Pausa la reproducción.', aliases=["pa"])
-    async def _pause(self, ctx):
+    async def _pause(self, ctx: commands.Context):
         server = ctx.message.guild
         voice_channel = server.voice_client
 
@@ -363,7 +363,10 @@ class music(commands.GroupCog):
             return await ctx.send("No estás en mi canal de voz.")
 
         voice_channel.pause()
-        await ctx.message.add_reaction('⏯')
+        try:
+            await ctx.message.add_reaction('⏯')
+        except:
+            await ctx.send("Done.", ephemeral=True, delete_after=3)
 
     @commands.hybrid_command(name='resume', help="Reanuda la reproducción pausada.", aliases=["r"])
     async def _resume(self, ctx):
@@ -375,7 +378,10 @@ class music(commands.GroupCog):
 
 
         voice_channel.resume()
-        await ctx.message.add_reaction('⏯')
+        try:
+            await ctx.message.add_reaction('⏯')
+        except:
+            await ctx.send("Done.", ephemeral=True, delete_after=3)
 
     @commands.hybrid_command(name="stop", help="Detén la lista de reproducción.", aliases=["st"])
     async def _stop(self, ctx: commands.Context):
@@ -474,7 +480,10 @@ class music(commands.GroupCog):
             return await ctx.send('Lista vacía.')
 
         ctx.voice_state.songs.shuffle()
-        await ctx.message.add_reaction('✅')
+        try:
+            await ctx.message.add_reaction('✅')
+        except:
+            await ctx.send("Done.", ephemeral=True, delete_after=3)
 
     @commands.hybrid_command(name='remove', help="Remueve una canción de la lista", aliases=["re"])
     async def _remove(self, ctx: commands.Context, index: int):
@@ -487,7 +496,10 @@ class music(commands.GroupCog):
             return await ctx.send('Lista vacía.')
 
         ctx.voice_state.songs.remove(index - 1)
-        await ctx.message.add_reaction('✅')
+        try:
+            await ctx.message.add_reaction('✅')
+        except:
+            await ctx.send("Done.", ephemeral=True, delete_after=3)
         
 
     @commands.hybrid_command(name='play', help="Reproduce una canción.", aliases=["p"])
