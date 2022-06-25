@@ -388,9 +388,13 @@ class music(commands.GroupCog):
 
         em = discord.Embed(title=f"🛑 Musica detenida.", color = ctx.author.color)
         em.set_footer(text=f"Solicitado por {ctx.author.name}", icon_url=f"{ctx.author.avatar.url or ctx.author.default_avatar.url}")
-        await ctx.send(embed=em)
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         voice.stop()
+        if ctx.voice_state.voice:
+            await ctx.voice_state.voice.disconnect()
+            del self.voice_states[ctx.guild.id]
+        await ctx.send(embed=em)
+            
 
     @commands.hybrid_command(name='skip', help="Salta la canción actual.", aliases=["sk"])
     async def _skip(self, ctx: commands.Context):
