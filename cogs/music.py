@@ -142,7 +142,7 @@ class Song:
         self.requester = source.requester
 
     def create_embed(self):
-        em = (discord.Embed(description='```css\n{0.source.title}\n```'.format(self), color=discord.Color.blurple())
+        em = (discord.Embed(description=f'[\n{self.source.title}\n]({self.source.url})', color=discord.Color.blurple())
                  .add_field(name='⏱️ Duración', value=f"`{self.source.duration}`", inline = True)
                  .add_field(name='👤 Solicitado por', value=self.requester.mention, inline = True)
                  .add_field(name='🎵 Artista', value='[{0.source.uploader}]({0.source.uploader_url})'.format(self))
@@ -150,7 +150,8 @@ class Song:
                  .add_field(name="👍 Total Likes", value ="`{}`".format(humanize.intword(self.source.likes)))
                  .add_field(name="👎 Total Dislikes", value ="`{}`".format(humanize.intword(self.source.dislikes)))
                  .set_thumbnail(url=self.source.thumbnail)
-                 .set_footer(text=f"Solicitado por {self.requester.name} (In streaming)", icon_url=f"{self.requester.avatar.url}"))
+                 .set_footer(text=f"Solicitado por {self.requester.name} (In streaming)", icon_url=f"{self.requester.avatar.url or self.requester.default_avatar.url}")
+                 .set_author(icon_url="https://c.tenor.com/B-pEg3SWo7kAAAAC/disk.gif", name="🎶 Reproduciendo..."))
 
         return em
 
@@ -324,7 +325,7 @@ class music(commands.GroupCog):
         dest = ctx.author.voice.channel
         await ctx.voice_state.stop()
         del self.voice_states[ctx.guild.id]
-        em = discord.Embed(title=f":zzz: Desconectada de {dest}", color = ctx.author.color)
+        em = discord.Embed(title=f":zzz: Desconectado de {dest}", color = ctx.author.color)
         em.set_footer(text=f"Solicitado por {ctx.author.name}")            
         await ctx.send(embed=em)
 
@@ -377,7 +378,7 @@ class music(commands.GroupCog):
         await ctx.message.add_reaction('⏯')
 
     @commands.hybrid_command(name="stop", help="Detén la lista de reproducción.", aliases=["st"])
-    async def _stop(self, ctx):
+    async def _stop(self, ctx: commands.Context):
 
         if not ctx.author.voice or not ctx.author.voice.channel:
             return await ctx.send('No estás conectado a ningún canal de voz.')
@@ -385,8 +386,8 @@ class music(commands.GroupCog):
         if ctx.author.voice.channel != ctx.guild.me.voice.channel:
             return await ctx.send("No estás en mi canal de voz.")
 
-        em = discord.Embed(title=f"🛑 Vale, ya no reproduciré nada más.", color = ctx.author.color)
-        em.set_footer(text=f"Solicitado por {ctx.author.name}", icon_url=f"{ctx.author.avatar.url}")
+        em = discord.Embed(title=f"🛑 Musica detenida.", color = ctx.author.color)
+        em.set_footer(text=f"Solicitado por {ctx.author.name}", icon_url=f"{ctx.author.avatar.url or ctx.author.default_avatar.url}")
         await ctx.send(embed=em)
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         voice.stop()
