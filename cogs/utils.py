@@ -9,12 +9,32 @@ class utils(app_commands.Group):
     def __init__(self):  
         super().__init__()
 
+    @app_commands.command(name="lock", description="Bloquea un canal")
+    @app_commands.checks.has_permissions(manage_channels=True)
+    async def lock(self, interaction: discord.Interaction, channel: Optional[discord.TextChannel]):
+        channel = channel or interaction.channel
+        if channel.permissions_for(interaction.guild.default_role).send_messages is False:
+            return await interaction.response.send_message("El canal ya está bloqueado", ephemeral=True)
+        await channel.set_permissions(interaction.guild.default_role, send_messages=False)
+        embed = discord.Embed(title="Canal bloqueado", description="El canal ha sido bloqueado", color=0x00ff00)
+        await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(name="unlock", description="Bloquea un canal")
+    @app_commands.checks.has_permissions(manage_channels=True)
+    async def unlock(self, interaction: discord.Interaction, channel: Optional[discord.TextChannel]):
+        channel = channel or interaction.channel
+        if channel.permissions_for(interaction.guild.default_role).send_messages is True:
+            return await interaction.response.send_message("El canal ya está desbloqueado", ephemeral=True)
+        await channel.set_permissions(interaction.guild.default_role, send_messages=True)
+        embed = discord.Embed(title="Canal bloqueado", description="El canal ha sido bloqueado", color=0x00ff00)
+        await interaction.response.send_message(embed=embed)
+
     @app_commands.command(name='purge', description='Elimina cierta cantidad de mensajes')
     @app_commands.checks.has_permissions(manage_messages=True)
-    async def purge(self, interaction: discord.Interaction, amount : int, channel: Optional[discord.TextChannel] = None):
+    async def purge(self, interaction: discord.Interaction, amount: int , channel: Optional[discord.TextChannel] = None):
+        if amount > 100:
+            amount = 100
         channel =  channel or interaction.channel
-        if amount > 200: 
-                amount = 200
         deleted_messages = await channel.purge(limit=amount)
         await interaction.response.send_message(f"{len(deleted_messages)} Mensajes eliminados \n\n Nota:Los mensajes anteriores a 2 semanas no se eliminarán", ephemeral=True) # Subtracting 1 as it's the message of the command
                   
