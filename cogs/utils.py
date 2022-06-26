@@ -4,6 +4,7 @@ from typing import Optional
 from discord import app_commands
 import discord
 import requests
+import aiohttp
 
 class utils(app_commands.Group):
     def __init__(self):  
@@ -76,16 +77,16 @@ class utils(app_commands.Group):
 
     @app_commands.command(name="shorten", description="Shorten a link")
     async def shorturl(self, interaction: discord.Interaction, url:str ):
-        x = requests.post("https://galactiko.net/api/redirects", json = {'url': url})
-        catjson = await x.json() 
-        status = catjson['status']
-        if status == "success":
-            shurl = catjson['key']
-            embed = discord.Embed(title="URL shortened", description=f"{url} has been shortened to {shurl}", color=discord.Color.purple())
-            await interaction.response.send_message(embed=embed)
-        else:
-            await interaction.response.send_message("Something went wrong")
-    
+        async with aiohttp.ClientSession() as session:
+            request = await session.post('https://galactiko.net/api/v1/redirects', json={'url': url})
+            dogjson = await request.json()
+            status = dogjson['status']
+            if status == "success":
+                dogurl = dogjson['key']
+                embed = discord.Embed(title="Dog", description=f"{url} has been shortened to {dogurl}", color=discord.Color.purple())
+                await interaction.response.send_message(embed=embed)
+            await interaction.response.send_message(embed=embed) 
+
     @app_commands.command(name="nuke")
     @app_commands.checks.has_permissions(manage_channels=True)
     async def nuke(self, interaction: discord.Interaction, channel: Optional[discord.TextChannel] = None):
