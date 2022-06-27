@@ -77,6 +77,7 @@ class utils(app_commands.Group):
 
     @app_commands.command(name="shorten", description="Shorten a link")
     async def shorturl(self, interaction: discord.Interaction, url:str ):
+        await interaction.response.defer()
         async with aiohttp.ClientSession() as session:
             request = await session.post('https://galactiko.net/api/v1/redirects', json={'url': url})
             dogjson = await request.json()
@@ -84,8 +85,9 @@ class utils(app_commands.Group):
             if status == "success":
                 dogurl = dogjson['key']
                 embed = discord.Embed(title="Dog", description=f"{url} has been shortened to {dogurl}", color=discord.Color.purple())
-                await interaction.response.send_message(embed=embed)
-            await interaction.response.send_message(embed=embed) 
+                await interaction.followup.send(embed=embed)
+            else:
+                await interaction.followup.send("Error")
 
     @app_commands.command(name="nuke")
     @app_commands.checks.has_permissions(manage_channels=True)
