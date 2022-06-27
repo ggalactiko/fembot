@@ -1,20 +1,55 @@
-#Extracted from https://github.com/Daishiky/music-discord/blob/main/cogs/music.py 
+#Extracted from https://github.com/KuroCat56/SatanyaBot/blob/master/cogs/music.py
 
 import asyncio
+import datetime
 import functools
 import itertools
 import math
 import random
-import urllib
+import textwrap
 import discord
 import youtube_dl
 from async_timeout import timeout
 from discord.ext import commands
-import re
 import humanize
-
+import aiohttp
 youtube_dl.utils.bug_reports_message = lambda: ''
 
+class Buttons(discord.ui.View):
+    def __init__(self, timeout):
+        super().__init__(timeout=timeout)
+        self.response = None
+        self.b2.disabled = True
+
+    @discord.ui.button(style=discord.ButtonStyle.green, emoji="▶️")
+    async def b2(self,interaction:discord.Interaction, button:discord.ui.Button):
+        server = interaction.guild
+        voice_channel = server.voice_client
+
+        if interaction.user.voice.channel != interaction.guild.me.voice.channel:
+            return await interaction.response.send_message("No estás en mi canal de voz.", ephemeral=True)
+
+        voice_channel.resume()
+        button.disabled = True
+        self.b3.disabled = False
+        await interaction.response.edit_message(view=self)  
+    
+    @discord.ui.button(style=discord.ButtonStyle.blurple, emoji="⏸")
+    async def b3(self,interaction:discord.Interaction, button:discord.ui.Button):
+        button.disabled = True
+        self.b2.disabled = False
+        
+        server = interaction.guild
+        voice_channel = server.voice_client
+        if interaction.user.voice.channel != interaction.guild.me.voice.channel:
+            return await interaction.response.send_message("No estás en mi canal de voz.", ephemeral=True)
+        voice_channel.pause()
+        await interaction.response.edit_message(view=self)    
+    
+    async def on_timeout(self):
+        for child in self.children:
+            child.disabled = True
+        await self.response.edit(view=self)
 
 class VoiceError(Exception):
     pass
@@ -68,6 +103,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         self.likes = data.get('like_count')
         self.dislikes = data.get('dislike_count')
         self.stream_url = data.get('url')
+        self.durnt = data.get('duration')
 
     def __str__(self):
         return '**`{0.title}`** by **`{0.uploader}`**'.format(self)
@@ -228,11 +264,14 @@ class VoiceState:
                         self.current = await self.songs.get()
                 except asyncio.TimeoutError:
                     self.bot.loop.create_task(self.stop())
+                    self.stop()
                     return
 
             self.current.source.volume = self._volume
             self.voice.play(self.current.source, after=self.play_next_song)
-            await self.current.source.channel.send(embed=self.current.create_embed())
+            view = Buttons(timeout=self.current.source.durnt)
+            o = await self.current.source.channel.send(embed=self.current.create_embed(), view=view)
+            view.response = o
 
             await self.next.wait()
 
