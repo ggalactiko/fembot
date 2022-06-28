@@ -6,7 +6,6 @@ import functools
 import itertools
 import math
 import random
-from re import T
 import textwrap
 import discord
 import youtube_dl
