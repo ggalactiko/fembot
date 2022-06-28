@@ -1,10 +1,22 @@
 import asyncio
 from datetime import datetime
+from dis import disco
 from typing import Optional
 from discord import app_commands
 import discord
 import requests
 import aiohttp
+
+class Buttons(discord.ui.View):
+    def __init__(self, **kwargs):
+        super().__init__(timeout=1)
+        self.b2.disabled = True
+        name = kwargs.get('name')
+        self.b2.label = f"Enviado por {name}"
+
+    @discord.ui.button(style=discord.ButtonStyle.gray)
+    async def b2(self,interaction:discord.Interaction, button:discord.ui.Button):
+        pass
 
 class utils(app_commands.Group):
     def __init__(self):  
@@ -38,7 +50,9 @@ class utils(app_commands.Group):
         channel =  channel or interaction.channel
         deleted_messages = await channel.purge(limit=amount)
         await interaction.response.send_message(f"{len(deleted_messages)} Mensajes eliminados \n\n Nota:Los mensajes anteriores a 2 semanas no se eliminarán", ephemeral=True) # Subtracting 1 as it's the message of the command
-                  
+
+
+    #https://some-random-api.ml/canvas/tweet?username={}&displayname={}&avatar={}&comment={}
     @app_commands.command(name="reminder", description="Crea un recordatorio")
     async def remind(self, interaction: discord.Interaction, time: str, reminder: str):
         try:
@@ -77,17 +91,18 @@ class utils(app_commands.Group):
 
     @app_commands.command(name="shorten", description="Shorten a link")
     async def shorturl(self, interaction: discord.Interaction, url:str ):
-        await interaction.response.defer()
-        async with aiohttp.ClientSession() as session:
-            request = await session.post('https://galactiko.net/api/v1/redirects', json={'url': url})
-            dogjson = await request.json()
-            status = dogjson['status']
-            if status == "success":
-                dogurl = dogjson['key']
-                embed = discord.Embed(title="Dog", description=f"{url} has been shortened to {dogurl}", color=discord.Color.purple())
-                await interaction.followup.send(embed=embed)
-            else:
-                await interaction.followup.send("Error")
+        if "." in url:
+            async with aiohttp.ClientSession() as session:
+                request = await session.post('https://galactiko.net/api/v1/redirects', json={'url': url})
+                dogjson = await request.json()
+                status = dogjson['status']
+                if status == "success":
+                    dogurl = dogjson['key']
+                    embed = discord.Embed(description=f"{url} has been shortened to {dogurl}", color=discord.Color.purple())
+                    embed.set_footer(text=f"Powered by Galactiko.net")
+                    await interaction.response.send_message(embed=embed)
+        else:
+            await interaction.response.send_message("Invalid URL")
 
     @app_commands.command(name="nuke")
     @app_commands.checks.has_permissions(manage_channels=True)
@@ -125,7 +140,7 @@ class utils(app_commands.Group):
             await interaction.response.send_message("No puedes usar @everyone", ephemeral=True)
             return
         else:
-            await interaction.response.send_message(f"{text} \n\n-{interaction.user}")
+            await interaction.response.send_message(f"{text}", view=Buttons(name=interaction.user))
             return
 
 async def setup(bot):
