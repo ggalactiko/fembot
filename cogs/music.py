@@ -6,6 +6,7 @@ import functools
 import itertools
 import math
 import random
+from re import T
 import textwrap
 import discord
 import youtube_dl
@@ -14,6 +15,8 @@ from discord.ext import commands
 import humanize
 import aiohttp
 youtube_dl.utils.bug_reports_message = lambda: ''
+
+cur_song = {}
 
 class Buttons(discord.ui.View):
     def __init__(self, timeout):
@@ -46,6 +49,43 @@ class Buttons(discord.ui.View):
         voice_channel.pause()
         await interaction.response.edit_message(view=self)    
     
+    @discord.ui.button(style=discord.ButtonStyle.blurple, emoji="📄")
+    async def b4(self,interaction:discord.Interaction, button:discord.ui.Button):
+        button.disabled = True
+        await interaction.response.edit_message(view=self)
+        try:
+            song = cur_song[interaction.guild.id]
+        except KeyError:
+            return await interaction.followup.send("No hay ninguna canción reproduciendo.", ephemeral=True)
+        async with aiohttp.ClientSession() as lyricsSession:
+            async with lyricsSession.get(f'https://some-random-api.ml/lyrics?title={song}') as jsondata: # define jsondata and fetch from API
+                if not 300 > jsondata.status >= 200: # if an unexpected HTTP status code is recieved from the website, throw an error and come out of the command
+                    return await interaction.followup.send(f'Vaya, se ha producido un error.\n\n Error code:{jsondata.status}', ephemeral=True)
+
+                lyricsData = await jsondata.json() # load the json data into its json form
+
+        error = lyricsData.get('error')
+        if error: # checking if there is an error recieved by the API, and if there is then throwing an error message and returning out of the command
+            return await interaction.followup.send(f'Error inesperado recibido: {error}', ephemeral=True)
+
+        songLyrics = lyricsData['lyrics'] # the lyrics
+        songArtist = lyricsData['author'] # the author's name
+        songTitle = lyricsData['title'] # the song's title
+        songThumbnail = lyricsData['thumbnail']['genius'] # the song's picture/thumbnail
+
+        # sometimes the song's lyrics can be above 4096 characters, and if it is then we will not be able to send it in one single message on Discord due to the character limit
+        # this is why we split the song into chunks of 4096 characters and send each part individually
+        for chunk in textwrap.wrap(songLyrics, 4096, replace_whitespace = False):
+            embed = discord.Embed(
+                title = songTitle,
+                description = chunk,
+                color = discord.Color.blurple(),
+                timestamp = datetime.datetime.now()
+            )
+            embed.set_thumbnail(url = songThumbnail)
+            embed.set_author(name = songArtist)
+            await interaction.followup.send(embed = embed)  
+
     async def on_timeout(self):
         for child in self.children:
             child.disabled = True
@@ -264,13 +304,14 @@ class VoiceState:
                         self.current = await self.songs.get()
                 except asyncio.TimeoutError:
                     self.bot.loop.create_task(self.stop())
-                    self.stop()
+                    await self.stop()
                     return
 
             self.current.source.volume = self._volume
             self.voice.play(self.current.source, after=self.play_next_song)
             view = Buttons(timeout=self.current.source.durnt)
             o = await self.current.source.channel.send(embed=self.current.create_embed(), view=view)
+            cur_song[self.current.source.channel.guild.id] = self.current.source.title
             view.response = o
 
             await self.next.wait()
