@@ -559,7 +559,7 @@ class music(commands.GroupCog):
                 song = Song(source)
 
                 await ctx.voice_state.songs.put(song)
-                await ctx.send(':headphones: Agregado a la lista {}'.format(str(source)))
+                await ctx.send(':headphones: Agregado a la lista {}'.format(str(source)), delete_after=5)
 
     @_join.before_invoke
     @_play.before_invoke
