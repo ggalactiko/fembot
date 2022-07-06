@@ -12,7 +12,7 @@ jsonpointer==2.2
 jsonschema==4.4.0
 keep-alive==0.0.1
 keepalive==0.1.1
-lxml==4.8.0
+lxml==4.9.1
 opuslib==3.0.1
 PyNaCl==1.4.0
 requests==2.27.1
