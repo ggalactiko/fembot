@@ -8,7 +8,6 @@ import discord
 from discord.ext import commands
 import asyncio
 import os
-from AntiScam import AntiScam
 from discord.app_commands import Choice
 from colorama import Fore
 from dotenv import load_dotenv
@@ -16,6 +15,7 @@ from dotenv import load_dotenv
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
 default_prefix = os.getenv("default_prefix") or "!"
+
 async def load_extensions():
     for filename in os.listdir("./cogs"):
         if filename.endswith(".py"):
@@ -126,19 +126,15 @@ async def on_guild_remove(guild):
 
 
 #Message listeners
-@uwu.listen()
-async def on_message(message):
-    await AntiScam(message, bot = uwu, whitelist = whitelist, muted_role='Muted')
-
 @uwu.event
 async def on_message(message: discord.Message):
-    global anti_ad
     if f"<@{uwu.user.id}>" == message.content:
         with open("prefixes.json", "r") as f:
          prefixes = json.load(f)
         prefix = prefixes.get(str(message.guild.id))
         prefix = prefix or default_prefix
         await message.channel.send(f"Mi prefix en este servidor es `{prefix}` \n Escribe `{prefix}help` para ver los comandos")
+    await uwu.process_commands(message)
 
 uwu.sniped_messages = {}
 @uwu.event
