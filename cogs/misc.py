@@ -274,7 +274,7 @@ class msc(commands.Cog):  # All cogs must inherit from commands.Cog
             if meme_type == "img":
 
                     async with aiohttp.ClientSession() as session:
-                        request = await session.get('https://gko.one/api/memes&type=img')
+                        request = await session.get('https://gko.one/api/v2/memes?type=img')
                         catjson = await request.json() 
                     embed = discord.Embed(title="meme", color=discord.Color.purple()) 
                     embed.set_footer(text=f"source: {catjson['source']}")
@@ -284,7 +284,7 @@ class msc(commands.Cog):  # All cogs must inherit from commands.Cog
         
             if meme_type == "video":
                     async with aiohttp.ClientSession() as session:
-                        request = await session.get('https://gko.one/api/memes&type=video')
+                        request = await session.get('https://galactiko.net/api/v2/memes?type=video')
                         catjson = await request.json() 
                     async with aiohttp.ClientSession() as session:
                         async with session.get(catjson['url']) as af:
@@ -303,7 +303,7 @@ class msc(commands.Cog):  # All cogs must inherit from commands.Cog
             if meme_type == "img":
                 async with ctx.typing():
                     async with aiohttp.ClientSession() as session:
-                        request = await session.get('https://gko.one/api/memes&type=img')
+                        request = await session.get('https://gko.one/api/v2/memes?type=img')
                         catjson = await request.json() 
                     embed = discord.Embed(title="meme", color=discord.Color.purple()) 
                     embed.set_footer(text=f"source: {catjson['source']}")
@@ -313,7 +313,7 @@ class msc(commands.Cog):  # All cogs must inherit from commands.Cog
             if meme_type == "video":
                 async with ctx.typing():
                     async with aiohttp.ClientSession() as session:
-                        request = await session.get('https://gko.one/api/memes&type=video')
+                        request = await session.get('https://galactiko.net/api/v2/memes?type=video')
                         catjson = await request.json() 
                     async with aiohttp.ClientSession() as session:
                         async with session.get(catjson['url']) as af:
