@@ -117,6 +117,14 @@ class random(app_commands.Group):
         embed = discord.Embed(title="Simp O Meter", description=f"Eres {percentage}% simp", color=discord.Color.purple()) 
         embed.set_image(url='https://assets.puzzlefactory.pl/puzzle/349/392/original.jpg')
         await interaction.response.send_message(embed=embed)
-    
+
+    @app_commands.command(name="catfact", description="Envía un dato random de un gato")
+    async def cat_fact(self, interaction: discord.Interaction):
+        async with aiohttp.ClientSession() as session:
+            request = await session.get('https://galactiko.net/api/v3/cat_facts?lang=es')
+            catjson = await request.json() 
+        embed = discord.Embed(title="Cat Fact", color=discord.Color.purple(), description=catjson['fact']) 
+        await interaction.response.send_message(embed=embed)
+        
 async def setup(bot):
     bot.tree.add_command(random())
